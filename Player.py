@@ -1,4 +1,4 @@
-import Tile
+import Board
 import Troop_Type
 
 class Human: 
