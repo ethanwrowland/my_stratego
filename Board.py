@@ -10,6 +10,8 @@ class Board:
     #separate inits for random/non-random starts
     def __init__(self) -> None:
         self.board = self.get_empty_board()
+        self.p1_troop_locations: list[tuple(int,int)] = []
+        self.p2_troop_locations: list[tuple(int,int)] = []
 
 
     """
@@ -43,6 +45,9 @@ class Board:
         board[4][7].troop_type = Troop_Type.water
         board[5][7].troop_type = Troop_Type.water
 
+        board.p1_troop_locations = []
+        board.p2_troop_locations = []
+
         return board
     
     def print_board(self) -> None:
@@ -54,6 +59,7 @@ class Board:
             to_print = ''
             to_print += str(row_num) + " |"
             for tile in self.board[row_num]:
+                # use cases to append correct string to the 
                 match tile.player_owner:
                     case Player_Owner.player_1:
                         to_print += "P1 "
@@ -107,6 +113,10 @@ class Board:
         # init empty view boards
         p1_view = Board()
         p2_view = Board()
+        # will also generate these because they are sometimes more useful and if we do all this iteration now
+        # it will save us an iteration thru the board later
+        p1_troop_locations: list[tuple[int,int]] = []
+        p2_troop_locations: list[tuple[int,int]] = []
 
         # iterate through existing board, add information to each view
         for row_index in range(10):
@@ -114,10 +124,10 @@ class Board:
                 curr_tile: Tile = self.board[row_index][col_index]
                 match curr_tile.player_owner:
                     case Player_Owner.no_owner:
-                        # p1 has troop on square, gets to know what is on the tile
+                        # p1 doesn't have troop there, but tile could be empty or water
                         p1_view.board[row_index][col_index].player_owner = Player_Owner.no_owner
                         p1_view.board[row_index][col_index].troop_type = curr_tile.troop_type
-                        # p2 knows p1 is there, but not what troop is there
+                        # p2 doesn't have troop there, but tile could be empty or water
                         p2_view.board[row_index][col_index].player_owner = Player_Owner.no_owner
                         p2_view.board[row_index][col_index].troop_type = curr_tile.troop_type
 
@@ -129,6 +139,9 @@ class Board:
                         p2_view.board[row_index][col_index].player_owner = curr_tile.player_owner
                         p2_view.board[row_index][col_index].troop_type = Troop_Type.unknown
 
+                        # add troop location to the list
+                        p1_troop_locations.append((row_index, col_index))
+
                     case Player_Owner.player_2:
                         # p2 has troop on square, gets to know what is on the tile
                         p2_view.board[row_index][col_index].player_owner = curr_tile.player_owner
@@ -137,6 +150,14 @@ class Board:
                         p1_view.board[row_index][col_index].player_owner = curr_tile.player_owner
                         p1_view.board[row_index][col_index].troop_type = Troop_Type.unknown
 
+                        # add troop location to the list
+                        p2_troop_locations.append((row_index, col_index))
+
+        # store the troop locations in each view board
+        p1_view.p1_troop_locations = p1_troop_locations
+        p2_view.p1_troop_locations = p1_troop_locations
+        p1_view.p2_troop_locations = p2_troop_locations
+        p2_view.p2_troop_locations = p2_troop_locations
         return (p1_view, p2_view)
 
 class Tile:

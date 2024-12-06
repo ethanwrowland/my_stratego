@@ -14,8 +14,12 @@ class Player:
         self.player_number = player_number
         self.view = Board()
 
+    def update_view(self, new_view: Board) -> None:
+        self.view = new_view
+
     def generate_valid_moves(self) -> list[tuple[tuple[int,int],tuple[int,int]]]:
         # generate a list of valid moves that the player can make based on their view
+        
         pass
 
 class Human(Player): 
