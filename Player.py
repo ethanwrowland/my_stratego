@@ -1,18 +1,33 @@
-import Board
-import Troop_Type
+from Board import Board
+from Troop_Type import Troop_Type
 
-class Human: 
+"""Note: view is the information that is deducible without prior knowledge of the game to each player.
+         This involves the player's troops and locations and the other player's locations
+         This is stored in a Board object
+         A computer player will have a probibility matrix that gets updated each time the view is updated
+         and includes data that can be infered from previous turns
+"""
+
+
+class Player:
     def __init__(self, player_number: int) -> None:
         self.player_number = player_number
-        self.view = [[]]
-        return None
+        self.view = Board()
+
+    def generate_valid_moves(self) -> list[tuple[tuple[int,int],tuple[int,int]]]:
+        # generate a list of valid moves that the player can make based on their view
+        pass
+
+class Human(Player): 
+    def __init__(self, player_number: int) -> None:
+        super().__init__(player_number)
     
-    def update_view(current_board: list[list]) -> list[list]:
-        return self.view
+    def update_view(current_board: Board) -> Board:
+        return super.view
 
-class Computer:
+class Computer(Player):
     def __init__(self, player_number: int) -> None:
-        self.player_number = player_number
+        super().__init__(player_number)
         self.view = self.initialize_compuer_view()
     
     def initialize_compuer_view(self):

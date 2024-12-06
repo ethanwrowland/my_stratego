@@ -1,5 +1,5 @@
 from Game_State import Game_State
-import Board
+from Board import Board
 from Player import Human
 from Player import Computer
 
