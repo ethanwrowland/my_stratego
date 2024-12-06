@@ -92,8 +92,10 @@ class Board:
                         to_print += "F "
                     case Troop_Type.water:
                         to_print += "WW"
+                    case Troop_Type.unknown:
+                        to_print += "??"
                     case _:
-                        raise Exception("Error in printing board, row number: " + str(row_num))
+                        raise Exception("Error in printing board, row number: " + str(row_num) + " tile troop type: " + str(tile.troop_type))
                 to_print += "|"
             print(to_print)            
             row_num = row_num - 1
@@ -134,7 +136,7 @@ class Board:
                         # p1 knows p2 is there, but not what troop is there
                         p1_view.board[row_index][col_index].player_owner = curr_tile.player_owner
                         p1_view.board[row_index][col_index].troop_type = Troop_Type.unknown
-        
+
         return (p1_view, p2_view)
 
 class Tile:
