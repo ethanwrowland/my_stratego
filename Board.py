@@ -23,7 +23,7 @@ class Board:
     
     def get_empty_board(self) -> list[list]:
         # empty board is easier to fill in
-        board = []
+        board: list[list[Tile]] = []
 
         for row in range(10):
             to_append = []
@@ -100,6 +100,42 @@ class Board:
         print(horizontal_line)
         print("  |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |")   
 
+
+    def return_view_boards(self) -> tuple:
+        # init empty view boards
+        p1_view = Board()
+        p2_view = Board()
+
+        # iterate through existing board, add information to each view
+        for row_index in range(10):
+            for col_index in range(10):
+                curr_tile: Tile = self.board[row_index][col_index]
+                match curr_tile.player_owner:
+                    case Player_Owner.no_owner:
+                        # p1 has troop on square, gets to know what is on the tile
+                        p1_view.board[row_index][col_index].player_owner = Player_Owner.no_owner
+                        p1_view.board[row_index][col_index].troop_type = curr_tile.troop_type
+                        # p2 knows p1 is there, but not what troop is there
+                        p2_view.board[row_index][col_index].player_owner = Player_Owner.no_owner
+                        p2_view.board[row_index][col_index].troop_type = curr_tile.troop_type
+
+                    case Player_Owner.player_1:
+                        # p1 has troop on square, gets to know what is on the tile
+                        p1_view.board[row_index][col_index].player_owner = curr_tile.player_owner
+                        p1_view.board[row_index][col_index].troop_type = curr_tile.troop_type
+                        # p2 knows p1 is there, but not what troop is there
+                        p2_view.board[row_index][col_index].player_owner = curr_tile.player_owner
+                        p2_view.board[row_index][col_index].troop_type = Troop_Type.unknown
+
+                    case Player_Owner.player_2:
+                        # p2 has troop on square, gets to know what is on the tile
+                        p2_view.board[row_index][col_index].player_owner = curr_tile.player_owner
+                        p2_view.board[row_index][col_index].troop_type = curr_tile.troop_type
+                        # p1 knows p2 is there, but not what troop is there
+                        p1_view.board[row_index][col_index].player_owner = curr_tile.player_owner
+                        p1_view.board[row_index][col_index].troop_type = Troop_Type.unknown
+        
+        return (p1_view, p2_view)
 
 class Tile:
     def __init__(self, troop_type: Troop_Type, player_owner: Player_Owner) -> None:
