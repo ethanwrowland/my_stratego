@@ -9,6 +9,7 @@ class Board:
 
     #separate inits for random/non-random starts
     def __init__(self) -> None:
+        self.board = [[Tile]]
         self.board = self.get_empty_board()
         self.p1_troop_locations: list[tuple(int,int)] = []
         self.p2_troop_locations: list[tuple(int,int)] = []
@@ -159,6 +160,20 @@ class Board:
         p1_view.p2_troop_locations = p2_troop_locations
         p2_view.p2_troop_locations = p2_troop_locations
         return (p1_view, p2_view)
+    
+    def move_troop(self, start_tuple, end_tuple) -> None:
+        # this moves a troop from the start location to the end location (overwrites end location)
+        # copy old location to new location
+        self.board[end_tuple[0]][end_tuple[1]].player_owner = self.board[start_tuple[0]][start_tuple[1]].player_owner
+        self.board[end_tuple[0]][end_tuple[1]].troop_type = self.board[start_tuple[0]][start_tuple[1]].troop_type
+        # get rid of the troop from where it was
+        self.kill_troop(start_tuple)
+
+
+    def kill_troop(self, kill_location: tuple[int,int]) -> None:
+        # this works to kill a troop essentially (when one player attacks another and loses)
+        self.board[kill_location[0]][kill_location[1]].player_owner = Player_Owner.no_owner
+        self.board[kill_location[0]][kill_location[1]].troop_type = Troop_Type.empty
 
 class Tile:
     def __init__(self, troop_type: Troop_Type, player_owner: Player_Owner) -> None:
