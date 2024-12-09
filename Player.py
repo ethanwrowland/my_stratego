@@ -19,7 +19,11 @@ class Player:
 
     def generate_valid_moves(self) -> list[tuple[tuple[int,int],tuple[int,int]]]:
         # generate a list of valid moves that the player can make based on their view
-        
+        # iterate over each of the players' troop locations
+        pass
+
+    def choose_move(self) -> tuple(tuple[int, int], tuple[int, int]):
+        # define in the parent class, overwrite in child classes, makes it easier to call
         pass
 
 class Human(Player): 
@@ -28,6 +32,11 @@ class Human(Player):
     
     def update_view(current_board: Board) -> Board:
         return super.view
+    
+    def chose_move(self) -> tuple(tuple[int, int], tuple[int, int]):
+        # write the functionality for this later???
+        return ((0,0),(0,1))
+    
 
 class Computer(Player):
     def __init__(self, player_number: int) -> None:
