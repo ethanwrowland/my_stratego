@@ -1,5 +1,8 @@
 from Game_State import Game_State
+from Troop_Type import Troop_Type
 from Board import Board
+from Board import Tile
+from Player import Player
 from Player import Human
 from Player import Computer
 
@@ -69,8 +72,36 @@ class Game:
         # detect if the given player is stuck (and update game state). If stuck, return true, false otw
         return False
 
-    def execute_turn(self, moving_player, start_pos: tuple[int,int], end_pos: tuple[int,int]):
-        pass
+    def execute_turn(self, moving_player: Player):
+        # start my seeing if the player to move has a valid move
+        if self.detect_player_stuck(moving_player):
+            if moving_player == self.player_1:
+                self.game_state = Game_State.player_2_victory
+            else:
+                self.game_state = Game_State.player_1_victory
+        
+        # if not stuck, proceed with turn
+        if self.game_state != Game_State.player_1_victory and self.game_state != Game_State.player_2_victory:
+            # get move from player
+            start_pos, end_pos = moving_player.choose_move()
+
+            # keep track of what to do with moving troops
+            start_survives:bool = True
+
+            # case based on the end position
+            match self.master_board[end_pos[0]][end_pos[1]]:
+                case Troop_Type.empty:
+                    # moving troop always survives if moved into empty space, no need to update start_survives
+                    pass
+                case Troop_Type.flag:
+                    # game has been won, finish game
+                    if moving_player == self.player_1:
+                        self.game_state = Game_State.player_1_victory
+                    else:
+                        self.game_state = Game_State.player_2_victory 
+                    
+
+
 
     def display_game_board(self):
         # this will handle displaying the board, given a variety of conditions/situations (more complicated later)
