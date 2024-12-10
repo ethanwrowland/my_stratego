@@ -22,8 +22,9 @@ class Player:
         # iterate over each of the players' troop locations
         pass
 
-    def choose_move(self) -> tuple(tuple[int, int], tuple[int, int]):
+    def choose_move(self) -> tuple[tuple[int, int], tuple[int, int]]:
         # define in the parent class, overwrite in child classes, makes it easier to call
+        print('chose move player')
         pass
 
 class Human(Player): 
@@ -33,9 +34,15 @@ class Human(Player):
     def update_view(current_board: Board) -> Board:
         return super.view
     
-    def chose_move(self) -> tuple(tuple[int, int], tuple[int, int]):
-        # write the functionality for this later???
-        return ((0,0),(0,1))
+    def choose_move(self) -> tuple[tuple[int, int], tuple[int, int]]:
+        # start_row = int(input('start row: '))
+        # start_col = int(input('start_col'))
+        # end_row = int(input('end row: '))
+        # end_col = int(input('end col: '))
+        # return ((start_row, start_col),(end_row, end_col))
+        print('chose move human!')
+
+        return ((4,4), (5,4))
     
 
 class Computer(Player):

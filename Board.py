@@ -46,9 +46,6 @@ class Board:
         board[4][7].troop_type = Troop_Type.water
         board[5][7].troop_type = Troop_Type.water
 
-        board.p1_troop_locations = []
-        board.p2_troop_locations = []
-
         return board
     
     def print_board(self) -> None:
