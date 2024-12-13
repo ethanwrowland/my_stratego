@@ -70,18 +70,27 @@ class Game:
 
     def testing_functions(self):
         p1_miner = Tile(Troop_Type.miner, Player_Owner.player_1)
+        p1_miner_1 = Tile(Troop_Type.miner, Player_Owner.player_1)
         p2_scout = Tile(Troop_Type.scout, Player_Owner.player_2)
 
         self.display_game_board()
 
         self.master_board.board[4][4] = p1_miner
+        self.master_board.board[4][5] = p1_miner
         self.master_board.board[5][4] = p2_scout
 
         self.display_game_board()
 
-        self.execute_turn(self.player_1)
+        p1_view, p2_view = self.master_board.return_view_boards()
+        p1_view.print_board()
+        p2_view.print_board()
+        print(p1_view, type(p1_view))
+        self.player_1.view = p1_view
+        self.player_2.view = p2_view
+        
 
-        self.display_game_board()
+        print(self.player_1.generate_valid_moves())
+        print(self.player_2.generate_valid_moves())
 
                 
 

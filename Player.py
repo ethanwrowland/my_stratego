@@ -36,7 +36,7 @@ class Player:
             for possible_end_square in curr_adj:
                 if possible_end_square not in this_player_locations:
                     # add to list if not already occupied by a troop the player controls
-                    valid_moves.append(troop_loc, possible_end_square)
+                    valid_moves.append((troop_loc, possible_end_square))
 
         return valid_moves
 
