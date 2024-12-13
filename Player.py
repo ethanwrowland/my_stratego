@@ -20,7 +20,25 @@ class Player:
     def generate_valid_moves(self) -> list[tuple[tuple[int,int],tuple[int,int]]]:
         # generate a list of valid moves that the player can make based on their view
         # iterate over each of the players' troop locations
-        pass
+        valid_moves: list[tuple[tuple[int,int], tuple[int,int]]] = []  # init empty list
+
+        # figure out where own and other troops are
+        if self.player_number == 1:
+            this_player_locations = self.view.p1_troop_locations
+            other_player_locations = self.view.p2_troop_locations
+        else:
+            this_player_locations = self.view.p2_troop_locations
+            other_player_locations = self.view.p1_troop_locations
+
+        # address everything but the weird scout moves
+        for troop_loc in this_player_locations:
+            curr_adj = self.view.get_adjacent_squares(troop_loc) # doesn't include "over the edge" or water locations
+            for possible_end_square in curr_adj:
+                if possible_end_square not in this_player_locations:
+                    # add to list if not already occupied by a troop the player controls
+                    valid_moves.append(troop_loc, possible_end_square)
+
+        return valid_moves
 
     def choose_move(self) -> tuple[tuple[int, int], tuple[int, int]]:
         # define in the parent class, overwrite in child classes, makes it easier to call

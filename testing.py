@@ -6,7 +6,8 @@ from Player_Owner import Player_Owner
 from Game import Game
 
 
-# test_board = Board()
+test_board = Board()
+print(test_board.get_adjacent_squares((0,0)))
 
 # p1_miner = Tile(Troop_Type.miner, Player_Owner.player_1)
 # p2_scout = Tile(Troop_Type.scout, Player_Owner.player_2)
@@ -26,6 +27,7 @@ from Game import Game
 # view_2.print_board()
 
 
-doing_game = Game('human', 'human', "True")
-doing_game.testing_functions()
+# doing_game = Game('human', 'human', "True")
+# doing_game.testing_functions()
+
 
