@@ -172,6 +172,46 @@ class Board:
         self.board[kill_location[0]][kill_location[1]].player_owner = Player_Owner.no_owner
         self.board[kill_location[0]][kill_location[1]].troop_type = Troop_Type.empty
 
+    def get_adjacent_squares(self, target_coords: tuple[int,int]) -> list[tuple[int,int]]:
+        target_row, target_col = target_coords  # unpack for easier processing
+        # returns the coordinates of squares 
+        adj_squares = []
+        # add above square
+        if target_row < 9:
+            adj_squares.append((target_row + 1, target_col))
+        # add below square
+        if target_row > 0:
+            adj_squares.append((target_row - 1, target_col))
+        # add right square
+        if target_col < 9:
+            adj_squares.append((target_row, target_col + 1))
+        # add left square
+        if target_col > 0:
+            adj_squares.append((target_row, target_col - 1))
+
+        # remove any possible lake squares (a lot easier to do here than later)
+        # left lake
+        if (4,2) in adj_squares:
+            adj_squares.remove((4,2))
+        if (4,3) in adj_squares:
+            adj_squares.remove((4,3))
+        if (5,2) in adj_squares:
+            adj_squares.remove((5,2))
+        if (5,3) in adj_squares:
+            adj_squares.remove((5,3))
+        # right lake
+        if (4,6) in adj_squares:
+            adj_squares.remove((4,6))
+        if (4,7) in adj_squares:
+            adj_squares.remove((4,7))
+        if (5,6) in adj_squares:
+            adj_squares.remove((5,6))
+        if (5,7) in adj_squares:
+            adj_squares.remove((5,7))
+
+        return adj_squares
+
+
 class Tile:
     def __init__(self, troop_type: Troop_Type, player_owner: Player_Owner) -> None:
         self.troop_type = troop_type
