@@ -92,6 +92,8 @@ class Game:
         print(self.player_1.generate_valid_moves())
         print(self.player_2.generate_valid_moves())
 
+        self.player_1.choose_move()
+
                 
 
     def detect_player_stuck(self, player_to_check) -> bool:

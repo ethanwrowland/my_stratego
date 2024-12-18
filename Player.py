@@ -53,14 +53,46 @@ class Human(Player):
         return super.view
     
     def choose_move(self) -> tuple[tuple[int, int], tuple[int, int]]:
-        # start_row = int(input('start row: '))
-        # start_col = int(input('start_col'))
-        # end_row = int(input('end row: '))
-        # end_col = int(input('end col: '))
-        # return ((start_row, start_col),(end_row, end_col))
-        print('chose move human!')
+        print('Player', str(self.player_number), 'to move')
+        while True: ##### messsssyyyyyy but also way easier to just do this way (only way out to input a valid move)
+            # start square input and validation
+            valid_input_format = False
+            while not valid_input_format:
+                start_square_str = input('enter start square in form \'row, col\'')
+                valid_input_format = True  # track if input is good
+                try:
+                    start_sq_row = int(start_square_str[0])
+                    assert start_square_str[1] == ','
+                    start_sq_col = int(start_square_str[2])
+                    assert len(start_square_str) == 3
+                except:
+                    print('invalid format')
+                    valid_input_format = False
 
-        return ((4,4), (5,4))
+            valid_input_format = False
+            while not valid_input_format:
+                end_square_str = input('enter end square in form \'row, col\'')
+                valid_input_format = True  # track if input is good
+                try:
+                    end_sq_row = int(end_square_str[0])
+                    assert end_square_str[1] == ','
+                    end_sq_col = int(end_square_str[2])
+                    assert len(end_square_str) == 3
+                except:
+                    print('invalid format')
+                    valid_input_format = False
+            
+            full_move_candidate = ((start_sq_row, start_sq_col), (end_sq_row, end_sq_col))
+            print('this is the selected move:', full_move_candidate)
+            # okay now have good input. Check to see if the move is valid!
+            valid_move_list = self.generate_valid_moves()
+            print('here is a list of valid moves:', valid_move_list)
+
+            if full_move_candidate in valid_move_list:
+                print('selected move was valid')
+                return full_move_candidate
+            print('selected move was invalid')
+        
     
 
 class Computer(Player):
