@@ -30,15 +30,100 @@ class Player:
             this_player_locations = self.view.p2_troop_locations
             other_player_locations = self.view.p1_troop_locations
 
-        # address everything but the weird scout moves
         for troop_loc in this_player_locations:
-            curr_adj = self.view.get_adjacent_squares(troop_loc) # doesn't include "over the edge" or water locations
-            for possible_end_square in curr_adj:
-                if possible_end_square not in this_player_locations:
-                    # add to list if not already occupied by a troop the player controls
-                    valid_moves.append((troop_loc, possible_end_square))
+            # figure out what troop type is at this location (scouts will be weird)
+            curr_troop_type: Troop_Type = self.view.board[troop_loc[0]][troop_loc[1]].troop_type
+            
+            if curr_troop_type == Troop_Type.scout:  # deal with scouts
+                valid_moves.append(self.generate_valid_scout_moves(troop_loc))
+
+            elif curr_troop_type.value < 11 and curr_troop_type.value > 0: # normal troop (not flag/bomb)
+                curr_adj = self.view.get_adjacent_squares(troop_loc) # doesn't include "over the edge" or water locations
+                for possible_end_square in curr_adj:
+                    if possible_end_square not in this_player_locations:
+                        # add to list if not already occupied by a troop the player controls
+                        valid_moves.append((troop_loc, possible_end_square))
 
         return valid_moves
+    
+    def generate_valid_scout_moves(self, scout_location: tuple[int,int])-> list[tuple[tuple[int, int], tuple[int, int]]]:
+        valid_scout_moves: list[tuple: int,int] = []  # init list to return
+
+        curr_row = scout_location[0]
+        curr_col = scout_location[1]
+
+        # figure out valid moves above
+        still_valid = True
+        while still_valid and curr_row <= 8:
+            curr_row += 1
+            candidate_square_type: Troop_Type = self.view.board[curr_row][curr_col].troop_type
+            if candidate_square_type == Troop_Type.empty:
+                # if next above square is empty, can move there, and can try for another square up
+                valid_scout_moves.append((scout_location, (curr_row, curr_col)))
+            elif candidate_square_type == Troop_Type.unknown:
+                # next square above is occupied by enemy troop. Can attack it but can't move past
+                valid_scout_moves.append((scout_location, (curr_row, curr_col)))
+                still_valid = False
+            else:
+                # next square is water or occupied by this player's troop. Can't move to square or past it
+                still_valid = False
+
+        # figure out valid moves below
+        curr_row = scout_location[0]
+        curr_col = scout_location[1]
+        still_valid = True
+        while still_valid and curr_row >= 1:
+            curr_row -= 1
+            candidate_square_type: Troop_Type = self.view.board[curr_row][curr_col].troop_type
+            if candidate_square_type == Troop_Type.empty:
+                # if next above square is empty, can move there, and can try for another square up
+                valid_scout_moves.append((scout_location, (curr_row, curr_col)))
+            elif candidate_square_type == Troop_Type.unknown:
+                # next square above is occupied by enemy troop. Can attack it but can't move past
+                valid_scout_moves.append((scout_location, (curr_row, curr_col)))
+                still_valid = False
+            else:
+                # next square is water or occupied by this player's troop. Can't move to square or past it
+                still_valid = False
+        
+        # figure out valid moves to the left
+        curr_row = scout_location[0]
+        curr_col = scout_location[1]
+        still_valid = True
+        while still_valid and curr_col >= 1:
+            curr_col -= 1
+            candidate_square_type: Troop_Type = self.view.board[curr_row][curr_col].troop_type
+            if candidate_square_type == Troop_Type.empty:
+                # if next above square is empty, can move there, and can try for another square up
+                valid_scout_moves.append((scout_location, (curr_row, curr_col)))
+            elif candidate_square_type == Troop_Type.unknown:
+                # next square above is occupied by enemy troop. Can attack it but can't move past
+                valid_scout_moves.append((scout_location, (curr_row, curr_col)))
+                still_valid = False
+            else:
+                # next square is water or occupied by this player's troop. Can't move to square or past it
+                still_valid = False
+
+        # figure out valid moves to the right
+        curr_row = scout_location[0]
+        curr_col = scout_location[1]
+        still_valid = True
+        while still_valid and curr_col <= 8:
+            curr_col += 1
+            #print('ln 113', str(curr_row), str(curr_col))
+            candidate_square_type: Troop_Type = self.view.board[curr_row][curr_col].troop_type
+            if candidate_square_type == Troop_Type.empty:
+                # if next above square is empty, can move there, and can try for another square up
+                valid_scout_moves.append((scout_location, (curr_row, curr_col)))
+            elif candidate_square_type == Troop_Type.unknown:
+                # next square above is occupied by enemy troop. Can attack it but can't move past
+                valid_scout_moves.append((scout_location, (curr_row, curr_col)))
+                still_valid = False
+            else:
+                # next square is water or occupied by this player's troop. Can't move to square or past it
+                still_valid = False
+
+        return valid_scout_moves
 
     def choose_move(self) -> tuple[tuple[int, int], tuple[int, int]]:
         # define in the parent class, overwrite in child classes, makes it easier to call

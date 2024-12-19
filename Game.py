@@ -72,12 +72,15 @@ class Game:
         p1_miner = Tile(Troop_Type.miner, Player_Owner.player_1)
         p1_miner_1 = Tile(Troop_Type.miner, Player_Owner.player_1)
         p2_scout = Tile(Troop_Type.scout, Player_Owner.player_2)
+        p2_miner = Tile(Troop_Type.miner, Player_Owner.player_2)
 
         self.display_game_board()
 
         self.master_board.board[4][4] = p1_miner
         self.master_board.board[4][5] = p1_miner
         self.master_board.board[5][4] = p2_scout
+        self.master_board.board[9][4] = p2_miner
+
 
         self.display_game_board()
 
@@ -91,6 +94,7 @@ class Game:
 
         print(self.player_1.generate_valid_moves())
         print(self.player_2.generate_valid_moves())
+        print('scout moves for p2:', self.player_2.generate_valid_scout_moves((5, 4)))
 
         self.player_1.choose_move()
 
