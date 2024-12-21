@@ -1,9 +1,9 @@
-from Board import Board
-from Board import Tile
-from Troop_Type import Troop_Type
-from Player_Owner import Player_Owner
+# from Board import Board
+# from Board import Tile
+# from Troop_Type import Troop_Type
+# from Player_Owner import Player_Owner
 
-from Game import Game
+# from Game import Game
 
 
 #test_board = Board()
@@ -27,7 +27,20 @@ from Game import Game
 # view_2.print_board()
 
 
-doing_game = Game('human', 'human', "True")
-doing_game.testing_functions()
+# doing_game = Game('human', 'human', "True")
+# doing_game.testing_functions()
 
 
+
+from Player import Player
+from Player import Computer
+
+test_comp_player = Computer(2)
+# for key, value in test_comp_player.prob_dict[(0,0)]:
+#     print(key.name, value)
+print()
+print(test_comp_player.prob_dict[(1,1)])
+print('\n')
+print(test_comp_player.prob_dict[(9,9)])
+print('\n')
+print(test_comp_player.prob_dict[(4,9)])

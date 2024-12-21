@@ -1,5 +1,6 @@
 from Board import Board
 from Troop_Type import Troop_Type
+from Player_Owner import Player_Owner
 
 """Note: view is the information that is deducible without prior knowledge of the game to each player.
          This involves the player's troops and locations and the other player's locations
@@ -181,15 +182,105 @@ class Human(Player):
     
 
 class Computer(Player):
+    INITAL_PROB_DICT = {Troop_Type.flag: .025, 
+                        Troop_Type.bomb: .15,
+                        Troop_Type.marshal: .025,
+                        Troop_Type.general: .025,
+                        Troop_Type.colonel: .05,
+                        Troop_Type.major: .075,
+                        Troop_Type.captain: .1,
+                        Troop_Type.lieutenant: .1,
+                        Troop_Type.sergeant: .1,
+                        Troop_Type.miner: .125,
+                        Troop_Type.scout: .2,
+                        Troop_Type.spy: .025,
+                        Troop_Type.empty: 0,
+                        Player_Owner.player_1: 0,
+                        Player_Owner.player_2: 0}
+    INITAL_PROB_DICT_EMPTY = {Troop_Type.flag: 0, 
+                              Troop_Type.bomb: 0,
+                              Troop_Type.marshal: 0,
+                              Troop_Type.general: 0,
+                              Troop_Type.colonel: 0,
+                              Troop_Type.major: 0,
+                              Troop_Type.captain: 0,
+                              Troop_Type.lieutenant: 0,
+                              Troop_Type.sergeant: 0,
+                              Troop_Type.miner: 0,
+                              Troop_Type.scout: 0,
+                              Troop_Type.spy: 0,
+                              Troop_Type.empty: 1,
+                              Player_Owner.player_1: 0,
+                              Player_Owner.player_2: 0}
+    
     def __init__(self, player_number: int) -> None:
         super().__init__(player_number)
+        self.initial_position = self.computer_select_initial_position()
+        self.prob_dict = {}
         self.view = self.initialize_compuer_view()
+        self.seen_dict: dict[Troop_Type:int] = {}
+        self.killed_dict: dict[Troop_Type:int] = {}
+
+    
+    def initialize_comp_dicts(self):
+        for troop_int_val in range(0,12):
+            # troop types have a value from 0 to 11
+            self.seen_dict[Troop_Type(troop_int_val)] = 0  # no enemy troops seen
+            self.killed_dict[Troop_Type(troop_int_val)] = 0  # no enemy troops killed
     
     def initialize_compuer_view(self):
-        # write later
+        # set up dictionary structure
+        for row in range(10):
+            for col in range(10):
+                # create keys and empty dicts for all cells on the board
+                self.prob_dict[(row, col)] = self.INITAL_PROB_DICT_EMPTY.copy()
+                # TODO: maybe come back here and get rid of the lakes, shouldn't actually be an issue tho
+                # those neurons should die p quick
+
+        # init prob dict for enemy troop locations
+        if self.player_number == 1:
+            # own troops are on bottom four rows, enemy on top four
+            for row in range(6, 10):
+                for col in range(10):
+                    self.prob_dict[(row, col)] = self.INITAL_PROB_DICT.copy()
+                    self.prob_dict[(row, col)][Player_Owner.player_2] = 1  # need to set the enemy player owner right
+        else:
+            # own troops are on top 4 rows, enemy on bottom 4
+            for row in range(4):
+                for col in range(10):
+                    self.prob_dict[(row, col)] = self.INITAL_PROB_DICT.copy()
+                    self.prob_dict[(row, col)][Player_Owner.player_1] = 1  # need to set the enemy player owner right
+        
+        # fix prob dict for all own troop locations
+        if self.player_number == 1:  # troops start on bottom 4
+            for row in range(4):
+                for col in range(10):  # iterate thru the list of troops
+                    init_troop_type_val = self.initial_position[row][col].value
+                    #print('(', row , ',', col, '): ', init_troop_type_val, Troop_Type(init_troop_type_val))
+                    self.prob_dict[(row,col)][Troop_Type(init_troop_type_val)] = 1
+                    self.prob_dict[(row,col)][Troop_Type.empty] = 0
+                    self.prob_dict[(row,col)][Player_Owner.player_1] = 1
+        else:  # troops start on top 4
+            for row in range(9, 5, -1):
+                for col in range(10):
+                    init_pos_row = 0  # adjust for diff index stuff
+                    init_troop_type = self.initial_position[init_pos_row][col]  # extract troop type
+                    self.prob_dict[(row,col)][init_troop_type] = 1  # correctly set troop type
+                    self.prob_dict[(row,col)][Troop_Type.empty] = 0  # tile is not empty
+                    self.prob_dict[(row,col)][Player_Owner.player_2] = 1  # set player owner
+                    init_pos_row += 1
+
         return [[]]
     
     def update_computer_view(self, start_loc: tuple[tuple], end_loc: tuple[tuple], start_troop_type: Troop_Type, end_troop_type: Troop_Type) -> bool:
         #write later
         return True
+    
+    def computer_select_initial_position(self) -> list[list[Troop_Type]]:
+        init_pos_list = []
+        init_pos_list.append([Troop_Type.flag, Troop_Type.bomb, Troop_Type.bomb, Troop_Type.bomb, Troop_Type.bomb, Troop_Type.bomb, Troop_Type.bomb, Troop_Type.marshal, Troop_Type.general, Troop_Type.colonel])
+        init_pos_list.append([Troop_Type.colonel, Troop_Type.major, Troop_Type.major, Troop_Type.major, Troop_Type.captain, Troop_Type.captain, Troop_Type.captain, Troop_Type.captain, Troop_Type.lieutenant, Troop_Type.lieutenant])
+        init_pos_list.append([Troop_Type.lieutenant, Troop_Type.lieutenant, Troop_Type.sergeant, Troop_Type.sergeant, Troop_Type.sergeant, Troop_Type.sergeant, Troop_Type.miner, Troop_Type.miner, Troop_Type.miner, Troop_Type.miner])
+        init_pos_list.append([Troop_Type.miner, Troop_Type.scout, Troop_Type.scout, Troop_Type.scout, Troop_Type.scout, Troop_Type.scout, Troop_Type.scout, Troop_Type.scout, Troop_Type.scout, Troop_Type.spy])
+        return init_pos_list
     
