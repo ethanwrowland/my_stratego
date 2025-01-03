@@ -15,7 +15,7 @@ class Player:
         self.player_number = player_number
         self.view = Board()
 
-    def update_view(self, new_view: Board) -> None:
+    def update_view(self, new_view: Board, moved_type: Troop_Type, move_loc: tuple[tuple[int,int], tuple[int,int]]) -> None:
         self.view = new_view
 
     def generate_valid_moves(self) -> list[tuple[tuple[int,int],tuple[int,int]]]:
@@ -131,11 +131,19 @@ class Player:
         print('chose move player')
         pass
 
+    def select_initial_position(self) -> list[list[Troop_Type]]:
+        # define in the parent class, overwrite in the child class, makes it easier to call
+        print('select init position general')
+        return [[]]
+    
+    def display_player_view(self) -> None:
+        self.view.print_board()
+
 class Human(Player): 
     def __init__(self, player_number: int) -> None:
         super().__init__(player_number)
     
-    def update_view(current_board: Board) -> Board:
+    def update_view(current_board: Board, moved_type: Troop_Type, move_loc: tuple[tuple[int,int], tuple[int,int]]) -> Board:
         return super.view
     
     def choose_move(self) -> tuple[tuple[int, int], tuple[int, int]]:
@@ -178,6 +186,14 @@ class Human(Player):
                 print('selected move was valid')
                 return full_move_candidate
             print('selected move was invalid')
+
+    def select_initial_position(self) -> list[list[Troop_Type]]:
+        init_pos_list = []
+        init_pos_list.append([Troop_Type.flag, Troop_Type.bomb, Troop_Type.bomb, Troop_Type.bomb, Troop_Type.bomb, Troop_Type.bomb, Troop_Type.bomb, Troop_Type.marshal, Troop_Type.general, Troop_Type.colonel])
+        init_pos_list.append([Troop_Type.colonel, Troop_Type.major, Troop_Type.major, Troop_Type.major, Troop_Type.captain, Troop_Type.captain, Troop_Type.captain, Troop_Type.captain, Troop_Type.lieutenant, Troop_Type.lieutenant])
+        init_pos_list.append([Troop_Type.lieutenant, Troop_Type.lieutenant, Troop_Type.sergeant, Troop_Type.sergeant, Troop_Type.sergeant, Troop_Type.sergeant, Troop_Type.miner, Troop_Type.miner, Troop_Type.miner, Troop_Type.miner])
+        init_pos_list.append([Troop_Type.miner, Troop_Type.scout, Troop_Type.scout, Troop_Type.scout, Troop_Type.scout, Troop_Type.scout, Troop_Type.scout, Troop_Type.scout, Troop_Type.scout, Troop_Type.spy])
+        return init_pos_list
         
     
 
@@ -220,6 +236,8 @@ class Computer(Player):
         self.view = self.initialize_compuer_view()
         self.seen_dict: dict[Troop_Type:int] = {}
         self.killed_dict: dict[Troop_Type:int] = {}
+        self.potential_flag_loc = 40
+        self.num_enemy_rem = 40
 
     
     def initialize_comp_dicts(self):
@@ -272,11 +290,49 @@ class Computer(Player):
 
         return [[]]
     
-    def update_computer_view(self, start_loc: tuple[tuple], end_loc: tuple[tuple], start_troop_type: Troop_Type, end_troop_type: Troop_Type) -> bool:
-        #write later
-        return True
+    def update_view(self, new_view: Board, moved_type: Troop_Type, move_loc: tuple[tuple[int,int], tuple[int,int]]) -> None:
+        old_view = self.view  # save the old view
+        self.view = new_view  # set the new view
+
+        start_loc = move_loc[0]
+        end_loc = move_loc[1]
+
+        # do stuff differently if this player moved?
+
+        # assume the other player moved
+        # if the troop didn't survive (end loc is [-1,-1]), delete prob dict entry but must go thru and re-calc prob dict entries
+        if end_loc == [-1,-1]:  # moving troop died
+            self.num_enemy_rem -= 1  # 1 fewer enemy
+
+            # if the start location could have been a flag, now know that is not true! good! record info to update other stuff later
+            if self.prob_dict[(start_loc[0], start_loc[1])][Troop_Type.flag] > 0:
+                self.potential_flag_loc -= 1
+
+            self.prob_dict[(start_loc[0], start_loc[1])] = self.INITAL_PROB_DICT_EMPTY.copy()
+            # TODO: troop died, need to record that information by adjusting rest of prob dict weights
+        
+        # if the moved type is not unknown, then update the prob dict accordingly
+        elif moved_type != Troop_Type.unknown:
+            self.prob_dict[(end_loc[0], end_loc[1])] = self.INITAL_PROB_DICT_EMPTY.copy()  # wipe prob dict
+            self.prob_dict[(end_loc[0], end_loc[1])][moved_type] = 1  # record moved piece
+            # set player number
+            if self.player_number == 1:
+                self.prob_dict[(end_loc[0], end_loc[1])][Player_Owner.player_2] = 1
+            else:
+                self.prob_dict[(end_loc[0], end_loc[1])][Player_Owner.player_1] = 1
+
+            # before wiping previous location, check to see how much we knew about it
+            if self.prob_dict[(start_loc[0], start_loc[1])][Troop_Type.bomb] != 0: # moved troop could have been a bomb, now know that isn't possible
+                # iterate thru, update all locations of prob dictionary to reflect we know one fewer piece is bomb
+
+                
+
+
+        # check to see if we know what moved
+        self.prob_dict
+
     
-    def computer_select_initial_position(self) -> list[list[Troop_Type]]:
+    def select_initial_position(self) -> list[list[Troop_Type]]:
         init_pos_list = []
         init_pos_list.append([Troop_Type.flag, Troop_Type.bomb, Troop_Type.bomb, Troop_Type.bomb, Troop_Type.bomb, Troop_Type.bomb, Troop_Type.bomb, Troop_Type.marshal, Troop_Type.general, Troop_Type.colonel])
         init_pos_list.append([Troop_Type.colonel, Troop_Type.major, Troop_Type.major, Troop_Type.major, Troop_Type.captain, Troop_Type.captain, Troop_Type.captain, Troop_Type.captain, Troop_Type.lieutenant, Troop_Type.lieutenant])

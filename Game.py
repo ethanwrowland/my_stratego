@@ -40,7 +40,12 @@ class Game:
         # init board
         self.master_board = Board()
 
-        # update board/get starting positions
+        # get init starting positions
+        p1_init_pos = self.player_1.select_initial_position()
+        p2_init_pos = self.player_2.select_initial_position()
+
+        # update board with init positions
+        self.master_board.set_up_starting_position(p1_init_pos, p2_init_pos)
 
         # # play game
         # while self.game_state != -3:  # no player has won 

@@ -48,6 +48,22 @@ class Board:
 
         return board
     
+    def set_up_starting_position(self, p1_troop_list: list[list[Troop_Type]], p2_troop_list: list[list[Troop_Type]]) -> None:
+        # do the p1 troops
+        for row_index in range(4):
+            for col_index in range(10):
+                # create a tile object and assign to appropriate location on board
+                self.board[row_index][col_index] = Tile(troop_type = p1_troop_list[row_index][col_index], player_owner = Player_Owner.player_1)
+
+        # do the p2 troops
+        for row_index in range(4):
+            for col_index in range(10):
+                # create tile object
+                new_tile = Tile(troop_type = p2_troop_list[row_index][col_index], player_owner= Player_Owner.player_2)
+                # insert in correct location
+                inverse_row = 9 - row_index  # correct rows are 6,7,8,9
+                self.board[inverse_row][col_index] = new_tile
+    
     def print_board(self) -> None:
         # print rows in reverse order
         row_num = 9
